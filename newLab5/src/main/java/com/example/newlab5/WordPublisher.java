@@ -65,6 +65,7 @@ public class WordPublisher {
         }
         if (goodword && badword) {
             rabbitTemplate.convertAndSend("Fanout", "", s);
+
         } else if (goodword) {
             rabbitTemplate.convertAndSend("Direct", "good", s);
         } else if (badword) {

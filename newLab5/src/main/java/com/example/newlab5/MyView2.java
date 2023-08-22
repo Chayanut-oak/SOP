@@ -2,6 +2,7 @@ package com.example.newlab5;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.select.Select;
@@ -18,8 +19,9 @@ public class MyView2 extends HorizontalLayout {
     private ComboBox s1, s2;
     private VerticalLayout v1, v2;
     private Word word;
-
+    private Notification notification;
     public MyView2() {
+        notification = new Notification();
         word = new Word();
         txt = new TextField();
         txt.setLabel("Add Word");
@@ -56,7 +58,7 @@ public class MyView2 extends HorizontalLayout {
         btn4.addClickListener(event -> {
             Sentence out = WebClient.create()
                     .get()
-                    .uri("http://127.0.0.1:8080/getSentence")
+                    .uri("http://127.0.0.1:8081/getSentence")
                     .retrieve()
                     .bodyToMono(Sentence.class)
                     .block();
@@ -69,11 +71,27 @@ public class MyView2 extends HorizontalLayout {
 
             ArrayList out = WebClient.create()
                     .post()
-                    .uri("http://127.0.0.1:8080/proof/" + newword)
+                    .uri("http://127.0.0.1:8081/proof/" + newword)
                     .retrieve()
                     .bodyToMono(ArrayList.class)
                     .block();
-            txt2.setValue("");
+            boolean badword = false;
+            boolean goodword = false;
+            for (int i = 0; i < word.getGoodWords().size() ; i++) {
+                goodword = newword.contains(word.getGoodWords().get(i));
+                if(goodword){
+                    break;
+                }
+            }
+            for (int i = 0; i < word.getBadWords().size() ; i++) {
+                badword = newword.contains(word.getBadWords().get(i));
+
+                if(badword){
+                    break;
+                }
+            }
+            Notification notification1 = goodword ? notification.show("Found Good Word") : notification.show("Found Bad Word");
+
         });
 
 
@@ -82,24 +100,24 @@ public class MyView2 extends HorizontalLayout {
 
             ArrayList out = WebClient.create()
                     .post()
-                    .uri("http://127.0.0.1:8080/addBad/" + newword)
+                    .uri("http://127.0.0.1:8081/addBad/" + newword)
                     .retrieve()
                     .bodyToMono(ArrayList.class)
                     .block();
             s2.setItems(out);
-            txt.setValue("");
+            notification.show("Insert "+newword+" to Bad Word List Complete.");
         });
         btn1.addClickListener(event -> {
             String newword = txt.getValue();
 
             ArrayList out = WebClient.create()
                     .post()
-                    .uri("http://127.0.0.1:8080/addGood/" + newword)
+                    .uri("http://127.0.0.1:8081/addGood/" + newword)
                     .retrieve()
                     .bodyToMono(ArrayList.class)
                     .block();
             s1.setItems(out);
-            txt.setValue("");
+            notification.show("Insert "+newword+" to Good Word List Complete.");
         });
     }
 
