@@ -47,7 +47,7 @@ public class WordPublisher {
     }
 
     @PostMapping(value = "/proof/{s}")
-    public void proofSentence(@PathVariable String s) {
+    public String proofSentence(@PathVariable String s) {
         boolean badword = false;
         boolean goodword = false;
         for (int i = 0; i < word.getGoodWords().size() ; i++) {
@@ -71,7 +71,7 @@ public class WordPublisher {
         } else if (badword) {
             rabbitTemplate.convertAndSend("Direct", "bad", s);
         }
-        System.out.println(s);
+        return goodword && badword ? "Found Good Word and Bad Word" : goodword ? "Found Good Word" : "Found Bad Word";
     }
     @GetMapping(value = "/getSentence")
     public Sentence getSentence(){

@@ -69,28 +69,13 @@ public class MyView2 extends HorizontalLayout {
         btn3.addClickListener(event -> {
             String newword = txt2.getValue();
 
-            ArrayList out = WebClient.create()
+            String out = WebClient.create()
                     .post()
                     .uri("http://127.0.0.1:8081/proof/" + newword)
                     .retrieve()
-                    .bodyToMono(ArrayList.class)
+                    .bodyToMono(String.class)
                     .block();
-            boolean badword = false;
-            boolean goodword = false;
-            for (int i = 0; i < word.getGoodWords().size() ; i++) {
-                goodword = newword.contains(word.getGoodWords().get(i));
-                if(goodword){
-                    break;
-                }
-            }
-            for (int i = 0; i < word.getBadWords().size() ; i++) {
-                badword = newword.contains(word.getBadWords().get(i));
-
-                if(badword){
-                    break;
-                }
-            }
-            Notification notification1 = goodword ? notification.show("Found Good Word") : notification.show("Found Bad Word");
+            Notification notification1 = notification.show(out);
 
         });
 

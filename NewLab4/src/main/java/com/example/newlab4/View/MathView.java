@@ -99,6 +99,7 @@ public class MathView extends VerticalLayout {
                     .bodyToMono(String.class)
                     .block();
             txt3.setValue(out);});
+
         btn6.addClickListener(event ->{
 //            double num1 = Double.parseDouble(txt.getValue());
 //            double num2 = Double.parseDouble(txt2.getValue());
