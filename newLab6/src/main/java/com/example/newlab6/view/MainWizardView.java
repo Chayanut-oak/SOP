@@ -1,8 +1,10 @@
 package com.example.newlab6.view;
 
 import com.example.newlab6.pojo.Wizard;
+import com.example.newlab6.pojo.Wizards;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -18,6 +20,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Route("mainPage.it")
 public class MainWizardView extends VerticalLayout {
@@ -28,8 +31,8 @@ public class MainWizardView extends VerticalLayout {
     private ComboBox c1, c2, c3;
     private Button btn, btn2, btn3, btn4, btn5;
     private HorizontalLayout h1;
-
-
+    private Wizards wizards;
+    private Notification notification;
     public MainWizardView() {
         txt = new TextField();
         txt.setPlaceholder("Fullname");
@@ -60,35 +63,14 @@ public class MainWizardView extends VerticalLayout {
         add(txt,ra,c1,txt2,c2,c3,h1);
         btn.addClickListener(event ->{
            current = (((--current % out.size()) + out.size()) % out.size());
-            txt.setValue(out.get(current).getName());
-            if(out.get(current).getSex().equals("m")){
-                ra.setValue("Male");
-            }else if(out.get(current).getSex().equals("f")){
-                ra.setValue("Female");
-            }else{
-                ra.setValue("");
-            }
+            setnew();
 
-            c1.setValue(out.get(current).getPosition());
-            txt2.setValue(out.get(current).getMoney()+"");
-            c2.setValue(out.get(current).getSchool());
-            c3.setValue(out.get(current).getHouse());
            });
         btn5.addClickListener(event ->{
             current = (((++current % out.size()) + out.size()) % out.size());
-            txt.setValue(out.get(current).getName());
-            if(out.get(current).getSex().equals("m")){
-                ra.setValue("Male");
-            }else if(out.get(current).getSex().equals("f")){
-                ra.setValue("Female");
-            }else{
-                ra.setValue("");
-            }
-            c1.setValue(out.get(current).getPosition());
-            txt2.setValue(out.get(current).getMoney()+"");
-            c2.setValue(out.get(current).getSchool());
-            c3.setValue(out.get(current).getHouse());
+            setnew();
         });
+
         btn2.addClickListener(event ->{
 
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -107,7 +89,8 @@ public class MainWizardView extends VerticalLayout {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-
+            Notification notification1 = notification.show("Wizard has been Created");
+            load();
             });
         btn3.addClickListener(event ->{
 
@@ -128,13 +111,15 @@ public class MainWizardView extends VerticalLayout {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
+            Notification notification1 = notification.show("Wizard has been Updated");
+            load();
         });
         btn4.addClickListener(event ->{
 
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
             formData.add("_id", out.get(current).get_id());
 
-            String out = WebClient.create()
+            String newval = WebClient.create()
                     .post()
                     .uri("http://127.0.0.1:8080/deleteWizard")
                     .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -143,27 +128,51 @@ public class MainWizardView extends VerticalLayout {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-            txt.setValue("");
-            ra.setValue("");
-            c1.setValue("");
-            c2.setValue("");
-            c3.setValue("");
-            txt2.setValue("");
+            current = (((--current % out.size()) + out.size()) % out.size());
+            txt.setValue(out.get(current).getName());
+            if(out.get(current).getSex().equals("m")){
+                ra.setValue("Male");
+            }else if(out.get(current).getSex().equals("f")){
+                ra.setValue("Female");
+            }else{
+                ra.setValue("");
+            }
+
+            c1.setValue(out.get(current).getPosition());
+            txt2.setValue(out.get(current).getMoney()+"");
+            c2.setValue(out.get(current).getSchool());
+            c3.setValue(out.get(current).getHouse());
+
+            Notification notification1 = notification.show("Wizard has been remove");
+            load();
         });
 
         load();
     }
     public void load(){
-         out = WebClient.create()
+       out = WebClient.create()
                 .get()
                 .uri("http://127.0.0.1:8080/wizards")
                 .retrieve()
                 .bodyToFlux(Wizard.class)
                  .collectList()
                 .block();
-
     }
+    public void setnew(){
+        txt.setValue(out.get(current).getName());
+        if(out.get(current).getSex().equals("m")){
+            ra.setValue("Male");
+        }else if(out.get(current).getSex().equals("f")){
+            ra.setValue("Female");
+        }else{
+            ra.setValue("");
+        }
 
+        c1.setValue(out.get(current).getPosition());
+        txt2.setValue(out.get(current).getMoney()+"");
+        c2.setValue(out.get(current).getSchool());
+        c3.setValue(out.get(current).getHouse());
+    }
     }
 
 
