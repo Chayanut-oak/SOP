@@ -4,6 +4,7 @@ import com.example.newlab6.pojo.Wizard;
 import com.example.newlab6.pojo.Wizards;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -38,7 +39,7 @@ public class MainWizardView extends VerticalLayout {
         txt.setPlaceholder("Fullname");
         txt2 = new TextField();
         txt2.setLabel("Dollars");
-        txt2.setPlaceholder("$");
+        txt2.setPrefixComponent(new Span("$"));
         ra = new RadioButtonGroup("Gender:", "Male", "Female");
         c1 = new ComboBox();
         c1.setPlaceholder("Position");
@@ -128,23 +129,17 @@ public class MainWizardView extends VerticalLayout {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-            current = (((--current % out.size()) + out.size()) % out.size());
-            txt.setValue(out.get(current).getName());
-            if(out.get(current).getSex().equals("m")){
-                ra.setValue("Male");
-            }else if(out.get(current).getSex().equals("f")){
-                ra.setValue("Female");
-            }else{
-                ra.setValue("");
+            load();
+            if(!out.isEmpty()){
+                current = (((--current % out.size()) + out.size()) % out.size());
             }
 
-            c1.setValue(out.get(current).getPosition());
-            txt2.setValue(out.get(current).getMoney()+"");
-            c2.setValue(out.get(current).getSchool());
-            c3.setValue(out.get(current).getHouse());
+            setnew();
+
+
 
             Notification notification1 = notification.show("Wizard has been remove");
-            load();
+
         });
 
         load();
@@ -157,21 +152,31 @@ public class MainWizardView extends VerticalLayout {
                 .bodyToFlux(Wizard.class)
                  .collectList()
                 .block();
-    }
-    public void setnew(){
-        txt.setValue(out.get(current).getName());
-        if(out.get(current).getSex().equals("m")){
-            ra.setValue("Male");
-        }else if(out.get(current).getSex().equals("f")){
-            ra.setValue("Female");
-        }else{
-            ra.setValue("");
-        }
 
-        c1.setValue(out.get(current).getPosition());
-        txt2.setValue(out.get(current).getMoney()+"");
-        c2.setValue(out.get(current).getSchool());
-        c3.setValue(out.get(current).getHouse());
+    }
+
+    public void setnew(){
+        if(!out.isEmpty() && out != null){
+            txt.setValue(out.get(current).getName());
+            if(out.get(current).getSex().equals("m")){
+                ra.setValue("Male");
+            }else if(out.get(current).getSex().equals("f")){
+                ra.setValue("Female");
+            }else{
+                ra.setValue("");
+            }
+            c1.setValue(out.get(current).getPosition());
+            txt2.setValue(out.get(current).getMoney()+"");
+            c2.setValue(out.get(current).getSchool());
+            c3.setValue(out.get(current).getHouse());
+        }else{
+            txt.setValue("");
+            ra.setValue("");
+            c1.setValue("");
+            c2.setValue("");
+            c3.setValue("");
+            txt2.setValue("");
+        }
     }
     }
 
