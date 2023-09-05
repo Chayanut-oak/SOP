@@ -101,8 +101,7 @@ public class MathView extends VerticalLayout {
             txt3.setValue(out);});
 
         btn6.addClickListener(event ->{
-//            double num1 = Double.parseDouble(txt.getValue());
-//            double num2 = Double.parseDouble(txt2.getValue());
+
             MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
             formData.add("n1", txt.getValue()); // key คือ n1, value คือ n1.getValue())
             formData.add("n2", txt2.getValue());
